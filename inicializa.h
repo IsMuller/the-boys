@@ -20,6 +20,8 @@ void inicializa_missao(struct missao *m, int id);//inicializa uma missao a parti
 
 void inicializa_invasao(struct invasao *i, int id);//inicializa uma invasao a partir de seu id
 
+void eventos_iniciais(struct mundo *w); //coloca na LEF os eventos iniciais para começar a simulaçao
+
 struct mundo *inicializa_mundo();//inicializa o mundo, utilizando todas as funcoes anteriores
 
 #endif

@@ -2,6 +2,7 @@
 #ifndef ENTIDADES
 #define ENTIDADES
 #include "fila.h"
+#include "fprio.h"
 #include "conjunto.h"
 
 struct heroi {
@@ -59,6 +60,8 @@ struct mundo {
     struct localizacao *tam_mundo; //coordenadas do x max e y max do mundo
 
     int min_atual; //tempo atual do mundo
+
+    struct fprio_t *lef; //lista de eventos futuros do mundo
 };
 
 #endif

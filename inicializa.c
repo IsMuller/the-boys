@@ -5,6 +5,7 @@
 #include "inicializa.h"
 #include "conjuntos.h"
 #include "fila.h"
+#include "eventos.h"
 
 
 void inicializa_heroi(struct heroi *h, int id) {//inicializa um heroi a partir de seu id 
@@ -45,4 +46,147 @@ void inicializa_invasao(struct invasao *i, int id) {//inicializa uma invasao a p
     i -> t_penalidade_base = aleat(0, 7200);
 }
 
-struct mundo *inicializa_mundo();//inicializa o mundo, utilizando todas as funcoes anteriores
+void eventos_iniciais(struct mundo *w){
+
+    int base_ini;
+    int tempo;
+
+    //criando os eventos iniciais para cada heroi
+    for (int i = 0; i < w -> n_herois; i++){
+
+        struct evento *ev = malloc (sizeof(struct evento));
+        if (!ev)
+            return;
+
+        base_ini = aleat(0, w -> n_bases - 1);
+        tempo = aleat(0, 4320);
+        ev -> tempo = tempo;
+        ev -> heroi = w -> herois[i];
+        ev -> base = w -> bases[base_ini];
+        ev -> tipo = EV_CHEGA;
+        ev -> missao = NULL;
+        ev -> invasao = NULL;
+        fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
+    
+    }
+    //criando os eventos iniciais de cada missao
+    for (int i = 0; i < w -> n_missoes; i++){
+
+        tempo = aleat(0, T_FIM_DO_MUNDO);
+
+        struct evento *ev = malloc (sizeof(struct evento));
+        if (!ev)
+            return;
+        
+        ev -> tempo = tempo;
+        ev -> heroi = NULL;
+        ev -> base = NULL;
+        ev -> tipo = EV_MISSAO;
+        ev -> missao = w -> missoes[i];
+        ev -> invasao = NULL;
+        
+        fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
+    }
+
+    //criando eventos iniciais para cada invasao
+
+    for (int i = 0; i < w -> n_invasoes; i++){
+
+        tempo = aleat((60*24*3) + 1, T_FIM_DO_MUNDO);
+
+        struct evento *ev = malloc (sizeof(struct evento));
+        if (!ev)
+            return;
+        
+        ev -> tempo = tempo;
+        ev -> heroi = NULL;
+        ev -> base = NULL;
+        ev -> tipo = EV_INVASAO;
+        ev -> missao = NULL;
+        ev -> invasao = w -> invasoes[i];
+        
+        fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
+
+    }
+
+    //criando evento FIM
+    struct evento *ev = malloc (sizeof(struct evento));
+
+    if (!ev)
+         return;
+        
+    ev -> tempo = T_FIM_DO_MUNDO;
+    ev -> heroi = NULL;
+    ev -> base = NULL;
+    ev -> tipo = EV_FIM;
+    ev -> missao = NULL;
+    ev -> invasao = NULL;
+
+    fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
+}
+
+
+struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando todas as funcoes anteriores
+    struct mundo *w = malloc (sizeof(struct mundo));
+    if (!w)
+        return NULL;   
+
+    w -> min_atual = T_INICIO;
+
+    w -> tam_mundo = malloc(sizeof(struct localizacao)); //alocando tamanho do mundo
+
+    if (!w -> tam_mundo) {
+        free(w);
+        return NULL;
+    }
+
+    w -> tam_mundo -> x = N_TAMANHO_MUNDO;
+    w -> tam_mundo -> y = N_TAMANHO_MUNDO;
+
+    w -> lef = fprio_cria(); //criando LEF
+    w -> n_habilidades = N_HABILIDADES;
+
+    //criando os herois
+    w -> n_herois = N_HEROIS;
+    w -> herois =  malloc(w -> n_herois * sizeof(struct heroi *)); //alocando espaço para o vetor de ponteiros
+    if (!w -> herois)
+        return NULL;
+
+    for (int i = 0; i < w -> n_herois; i++){
+        w -> herois[i] = malloc(sizeof(struct heroi));//alocando cada heroi
+        if (!w -> herois[i])
+            return NULL;
+        inicializa_heroi(w -> herois[i], i);
+    }
+
+    //criando as bases
+    w -> n_bases = N_BASES;
+    w -> bases =  malloc(w -> n_bases * sizeof(struct base *)); //alocando espaço para o vetor de ponteiros
+    for (int i = 0; i < w -> n_bases; i++){
+        w -> bases[i] = malloc(sizeof(struct base));//alocando cada base
+        if (!w -> bases[i])
+            return NULL;
+        inicializa_base(w -> bases[i], i);
+    }
+
+    //criando as missoes
+    w -> n_missoes = N_MISSOES;
+    w -> missoes =  malloc(w -> n_missoes * sizeof(struct missao *)); //alocando espaço para o vetor de ponteiros
+    for (int i = 0; i < w -> n_missoes; i++){
+        w -> missoes[i] = malloc(sizeof(struct missao));//alocando cada missao
+        if (!w -> missoes[i])
+            return NULL;
+        inicializa_missao(w -> missoes[i], i);
+    }
+
+    //criando as invasoes
+    w -> n_invasoes = N_INVASOES;
+    w -> invasoes =  malloc(w -> n_invasoes * sizeof(struct invasao *)); //alocando espaço para o vetor de ponteiros
+    for (int i = 0; i < w -> n_invasoes; i++){
+        w -> invasoes[i] = malloc(sizeof(struct invasao));//alocando cada missao
+        if (!w -> invasoes[i])
+            return NULL;
+        inicializa_invasao(w -> invasoes[i], i);
+    }
+    return w;
+}
