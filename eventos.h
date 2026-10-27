@@ -28,26 +28,26 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b);
 
 void evento_espera(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_desiste(int tempo, struct heroi *h, struct base *b);
+void evento_desiste(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_avisa(int tempo, struct base *b);
+void evento_avisa(struct mundo *w, struct base *b);
 
-void evento_entra(int tempo, struct heroi *h, struct base *b);
+void evento_entra(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_sai(int tempo, struct heroi *h, struct base *b);
+void evento_sai(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_viaja(int tempo, struct heroi *h, struct base *b);
+void evento_viaja(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_morre(int tempo, struct heroi *h, struct base *b);
+void evento_morre(struct mundo *w, struct heroi *h, struct base *b);
 
-void evento_missao(int tempo, struct missao *m);
+void evento_missao(struct mundo *w, struct missao *m);
 
-void evento_invade(int tempo, struct invasao *i, struct base *b);
+void evento_invade(struct mundo *w, struct invasao *i, struct base *b);
 
-void evento_recupera_heroi(int tempo, struct heroi *h);
+void evento_recupera_heroi(struct mundo *w, struct heroi *h);
 
-void evento_reconstroi_base(int tempo, struct base *b);
+void evento_reconstroi_base(struct mundo *w, struct base *b);
 
-void evento_fim(int tempo);
+void evento_fim(struct mundo *w);
 
 #endif

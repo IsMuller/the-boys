@@ -4,21 +4,6 @@
 #include <string.h>
 #include "fila.h"
 
-// descreve um nodo da fila 
-struct fila_nodo_t
-{
-	void *item ;			// item associado ao nodo
-	struct fila_nodo_t *prox;	// próximo nodo
-};
-
-// descreve uma fila 
-struct fila_t
-{
-	struct fila_nodo_t *prim ;	// primeiro nodo da fila
-	struct fila_nodo_t *fim;	// último nodo da fila
-	int num ;			// número de itens na fila
-} ;
-
 // Cria uma fila vazia.
 // Retorno: ponteiro para a fila criada ou NULL se erro.
 struct fila_t *fila_cria (){
@@ -122,7 +107,7 @@ void fila_imprime (struct fila_t *f){
   struct fila_nodo_t *aux = f -> prim;
   for (int i = 0; i < f -> num; i++){
 
-    printf("%d", aux -> item);
+    printf("%p", aux->item); //ja que aux -> item sempre sera um ponteiro, precisamos imprimi-lo como tal
 
     if (i < f -> num - 1)
       printf(" ");

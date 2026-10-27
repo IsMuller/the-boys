@@ -3,7 +3,7 @@
 #include "funcoes_extras.h"
 #include "entidades.h"
 #include "inicializa.h"
-#include "conjuntos.h"
+#include "conjunto.h"
 #include "fila.h"
 #include "eventos.h"
 
@@ -11,6 +11,8 @@
 void inicializa_heroi(struct heroi *h, int id) {//inicializa um heroi a partir de seu id 
     int quant_habilidades;
     h -> id = id;
+    h -> morto = 0;
+    h -> estado = 1;
     h -> experiencia = 0;
     h -> paciencia = aleat(0, 100);
     h -> velocidade = aleat(50, 5000);
@@ -20,10 +22,13 @@ void inicializa_heroi(struct heroi *h, int id) {//inicializa um heroi a partir d
 
 void inicializa_base(struct base *b, int id) {//inicializa uma base a partir de seu id
     b -> id = id;
+    b -> estado = 1;
+    b -> missoes = 0;
     b ->local_base = malloc(sizeof(struct localizacao));
     b -> local_base -> x = aleat(0, N_TAMANHO_MUNDO - 1);
     b -> local_base -> y = aleat(0, N_TAMANHO_MUNDO - 1);
     b -> max = aleat(3, 10);
+    b -> f_max = 0;
     b -> equipe = cjto_cria(b -> max);
     b -> f_espera = fila_cria();
 }
@@ -31,11 +36,12 @@ void inicializa_base(struct base *b, int id) {//inicializa uma base a partir de 
 void inicializa_missao(struct missao *m, int id) {//inicializa uma missao a partir de seu id
     int quant_habilidades;
     m -> id = id;
+    m -> tentativas = 1;
     m -> local_missao = malloc(sizeof(struct localizacao));
     m -> local_missao -> x = aleat(0, N_TAMANHO_MUNDO - 1);
     m-> local_missao -> y = aleat(0, N_TAMANHO_MUNDO - 1);
     quant_habilidades = aleat(6, 10);
-    m -> habilidades = cjto_aleat(quant_habilidades, N_HABILIDADES);
+    m -> hab_necessarias = cjto_aleat(quant_habilidades, N_HABILIDADES);
     m -> perigo = aleat(0, 100);
 }
 
@@ -101,7 +107,7 @@ void eventos_iniciais(struct mundo *w){
         ev -> tempo = tempo;
         ev -> heroi = NULL;
         ev -> base = NULL;
-        ev -> tipo = EV_INVASAO;
+        ev -> tipo = EV_INVADE;
         ev -> missao = NULL;
         ev -> invasao = w -> invasoes[i];
         
@@ -171,6 +177,7 @@ struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando todas as funco
 
     //criando as missoes
     w -> n_missoes = N_MISSOES;
+    w -> n_missoes_cumpridas = 0;
     w -> missoes =  malloc(w -> n_missoes * sizeof(struct missao *)); //alocando espaço para o vetor de ponteiros
     for (int i = 0; i < w -> n_missoes; i++){
         w -> missoes[i] = malloc(sizeof(struct missao));//alocando cada missao
