@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "inicializa.h"
 #include "eventos.h"
 #include "entidades.h"
@@ -41,6 +42,8 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
         ev -> invasao = NULL;
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
         printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", w -> min_atual, h -> id, b -> id, cjto_card (b -> equipe), b -> max);
+
+        
     }
 }
 
@@ -48,7 +51,7 @@ void evento_espera(struct mundo *w, struct heroi *h, struct base *b){
 
     fila_insere(b -> f_espera, h);
     if (fila_tamanho(b -> f_espera) > b -> f_max) //vai atualizando a quantidade max de pessoas q ja ficaram na fila
-        f_max = fila_tamanho(b -> f_espera);
+        b -> f_max = fila_tamanho(b -> f_espera);
 
     struct evento *ev = malloc (sizeof(struct evento));
     if (!ev)
@@ -61,6 +64,8 @@ void evento_espera(struct mundo *w, struct heroi *h, struct base *b){
     ev -> invasao = NULL;
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n", w -> min_atual, h -> id, b -> id, fila_tamanho (b -> f_espera));
+
+    
 }
 
 void evento_desiste(struct mundo *w, struct heroi *h, struct base *b) {
@@ -80,6 +85,8 @@ void evento_desiste(struct mundo *w, struct heroi *h, struct base *b) {
 
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: DESISTE HEROI %2d BASE %d\n", w -> min_atual, h -> id, b -> id);
+
+    
 }
 
 void evento_avisa(struct mundo *w, struct base *b) {
@@ -107,6 +114,7 @@ void evento_avisa(struct mundo *w, struct base *b) {
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
 
     }
+    
 }
 
 void evento_entra(struct mundo *w, struct heroi *h, struct base *b){
@@ -126,6 +134,8 @@ void evento_entra(struct mundo *w, struct heroi *h, struct base *b){
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
 
     printf("%6d: ENTRA HEROI %2d BASE %d (%2d/%2d) SAI %6d\n", w -> min_atual, h -> id, b -> id, cjto_card (b -> equipe), b -> max, w -> min_atual + tpb);
+
+    
 }
 
 void evento_sai(struct mundo *w, struct heroi *h, struct base *b){
@@ -161,10 +171,13 @@ void evento_sai(struct mundo *w, struct heroi *h, struct base *b){
 
     fprio_insere(w -> lef, ev2, ev2 -> tipo, ev2 -> tempo); //insere evento avisa
 
+    
+
 }
 
 void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
 
+    
     struct base *base_atual = w -> bases[h -> base];
     double distancia = distancia_cartesiana(base_atual -> local_base, b -> local_base);
     int duracao = distancia / h -> velocidade;
@@ -172,6 +185,7 @@ void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
     struct evento *ev = malloc (sizeof(struct evento));
     if (!ev)
         return;
+
     ev -> tipo = EV_CHEGA;
     ev -> tempo = w -> min_atual + duracao;
     ev -> heroi = h;
@@ -180,6 +194,8 @@ void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
     ev -> invasao = NULL;
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: VIAJA HEROI %2d BASE %d BASE %d DIST %.2f VEL %d CHEGA %d\n", w -> min_atual, h -> id, base_atual -> id, b -> id, distancia, h -> velocidade, w -> min_atual + duracao);
+
+    
 }
 
 void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
@@ -199,6 +215,7 @@ void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
     ev -> invasao = NULL;
 
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
+    
 }
 
 void evento_missao(struct mundo *w, struct missao *m){
@@ -300,6 +317,7 @@ void evento_missao(struct mundo *w, struct missao *m){
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
         m -> tentativas++;
     }
+    
 }
 
 void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
@@ -338,6 +356,8 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
         cjto_imprime(b -> equipe);
         printf("]\n");
         
+        W -> n_invasoes_realizadas++;
+        
         b -> estado = 0;
         struct evento *ev3 = malloc (sizeof(struct evento));
         if (!ev3)
@@ -351,19 +371,24 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
         ev3 -> invasao = NULL;
         fprio_insere(w -> lef, ev3, ev3 -> tipo, ev3 -> tempo);   
     } 
+    
 }
 
 void evento_recupera_heroi(struct mundo *w, struct heroi *h){
     w -> herois[h -> id] -> estado = 1;
+    
 }
 
 void evento_reconstroi_base(struct mundo *w, struct base *b){
      w -> bases[b -> id] -> estado = 1;
+     
 }
 
 void evento_fim(struct mundo *w){
 
-    printf("%6d: FIM", w -> min_atual)
+    
+
+    printf("%6d: FIM", w -> min_atual);
     int quant_mortos = 0;
     //impressao dos herois
     for (int i = 0; i < w -> n_herois; i++){
@@ -383,11 +408,26 @@ void evento_fim(struct mundo *w){
         printf("BASE %2d LOT %2d FILA MAX %2d MISSOES %d", w -> bases[i]-> id, w -> bases[i] -> max, w -> bases[i] -> f_max,  w -> bases[i] -> missoes);
     }
 
+    float porcentagem_m_cumpridas = w -> n_missoes_cumpridas / w -> n_missoes * 100;
+    float porcentagem_i_feitas = w -> n_invasoes_realizadas / w -> n_invasoes * 100;
+
+    int min_tentativas_missoes = w -> missoes[1] -> tentativas;
+    //vamos calcular o max e min de tentativas das missoes 
+    for (i = 0; i < w -> n_missoes_cumpridas){
+
+    }
+
+    printf("EVENTOS TRATADOS: %6d", w -> n_eventos_tratados);
+    printf("MISSOES CUMPRIDAS: %6d/%6d (%.1f%)", w -> n_missoes_cumpridas, w -> n_missoes, porcentagem_m_cumpridas);
+    printf("INVASOES REALIZADAS: %6d/%6d (%.1f%)", w -> n_invasoes_realizadas, w -> n_invasoes, porcentagem_i_feitas);
+    printf("TENTATIVAS POR MISSAO: MIN %d, MAX %d, MEDIA %.1f", min_tentativas_missoes, max_tentativas_missoes, media_tentativa_missoes)
+    printf("TAXA MORTALIDADE: %.1f", mortalidade);
+
 }
 
 
 
-O evento FIM encerra a simulação, gerando um relatório com informações sobre
+/*O evento FIM encerra a simulação, gerando um relatório com informações sobre
 heróis, bases e missões:
 525600: FIM
 HEROI 0 VIVO PAC 32 VEL 3879 EXP 441 HABS [ 2 9 ]
@@ -401,4 +441,4 @@ TENTATIVAS/MISSAO: MIN 1, MAX 313, MEDIA 26.0
 TAXA MORTALIDADE: 52.0%
 HEROI %2d VIVO PAC %3d VEL %4d EXP %4d HABS [ %d %d ... ]
 HEROI %2d MORTO PAC %3d VEL %4d EXP %4d HABS [ %d %d ... ]
-BASE %2d LOT %2d FILA MAX %2d MISSOES %d
+BASE %2d LOT %2d FILA MAX %2d MISSOES %d */

@@ -58,10 +58,13 @@ struct mundo {
     int n_missoes_cumpridas; //numero total de missoes cumpridas
     struct missao **missoes; //vetor de ponteiros que apontam para cada struct missao
 
-    int n_invasoes; //numero total de invasoes feitas
+    int n_invasoes; //numero total de invasoes marcadas
+    int n_invasoes_realizadas; // numero de invasoes feitas
     struct invasao **invasoes; //vetor de ponteiros que apontam para cada struct invasao
 
     int n_habilidades; //numero total de habilidades distintas no mundo
+
+    int n_eventos_tratados; //quant de eventos tratados;
     
     struct localizacao *tam_mundo; //coordenadas do x max e y max do mundo
 
