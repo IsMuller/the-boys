@@ -54,7 +54,7 @@ void inicializa_invasao(struct invasao *i, int id) {//inicializa uma invasao a p
 
 void eventos_iniciais(struct mundo *w){
 
-    int base_ini;
+    int base_ini_id;
     int tempo;
 
     //criando os eventos iniciais para cada heroi
@@ -64,14 +64,12 @@ void eventos_iniciais(struct mundo *w){
         if (!ev)
             return;
 
-        base_ini = aleat(0, w -> n_bases - 1);
+        base_ini_id = aleat(0, w -> n_bases - 1);
         tempo = aleat(0, 4320);
-        ev -> tempo = tempo;
-        ev -> heroi = w -> herois[i];
-        ev -> base = w -> bases[base_ini];
         ev -> tipo = EV_CHEGA;
-        ev -> missao = NULL;
-        ev -> invasao = NULL;
+        ev -> tempo = tempo;
+        ev -> id1 = i;
+        ev -> id2 = base_ini_id;
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     
     }
@@ -84,12 +82,10 @@ void eventos_iniciais(struct mundo *w){
         if (!ev)
             return;
         
-        ev -> tempo = tempo;
-        ev -> heroi = NULL;
-        ev -> base = NULL;
         ev -> tipo = EV_MISSAO;
-        ev -> missao = w -> missoes[i];
-        ev -> invasao = NULL;
+        ev -> tempo = tempo;
+        ev -> id1 = i;
+        ev -> id2 = -1;
         
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     }
@@ -104,15 +100,12 @@ void eventos_iniciais(struct mundo *w){
         if (!ev)
             return;
         
-        ev -> tempo = tempo;
-        ev -> heroi = NULL;
-        ev -> base = NULL;
         ev -> tipo = EV_INVADE;
-        ev -> missao = NULL;
-        ev -> invasao = w -> invasoes[i];
+        ev -> tempo = tempo;
+        ev -> id1 = i;
+        ev -> id2 = -1;
         
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
-
     }
 
     //criando evento FIM
@@ -120,13 +113,11 @@ void eventos_iniciais(struct mundo *w){
 
     if (!ev)
          return;
-        
+
+    ev -> tipo = EV_FIM;     
     ev -> tempo = T_FIM_DO_MUNDO;
-    ev -> heroi = NULL;
-    ev -> base = NULL;
-    ev -> tipo = EV_FIM;
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = -1;
+    ev -> id2 = -1;
 
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
 }

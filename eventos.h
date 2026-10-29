@@ -18,10 +18,8 @@
 struct evento { //usamos para armazenar os dados na LEF
     int tipo; //tipo da base, de 0 a 12
     int tempo; //tempo que o evento ocorre
-    struct heroi *heroi; //heroi envolvido (se tiver)  ---> se nao tiver, valor é NULL
-    struct base *base; //base envolvida (se tiver)
-    struct missao *missao; //missao envolvida (se tiver)
-    struct invasao *invasao; //invasao envolvida (se tiver)
+    int id1; //primeiro id relacionado ao evento (heroi/base/missao/invasao)
+    int id2; //segundo id relacionado ao evento (heroi/base/missao/invasao)
 };
 
 void evento_chega (struct mundo *w, struct heroi *h, struct base *b);

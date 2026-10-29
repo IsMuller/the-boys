@@ -23,10 +23,8 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
             return;
         ev -> tipo = EV_ESPERA;
         ev -> tempo = w -> min_atual;
-        ev -> heroi = h;
-        ev -> base = b; 
-        ev -> missao = NULL;
-        ev -> invasao = NULL;
+        ev -> id1 = h -> id;
+        ev -> id2 = b -> id; 
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
         printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", w -> min_atual, h -> id, b -> id, cjto_card (b -> equipe), b -> max);
     }
@@ -36,10 +34,8 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
             return;
         ev -> tipo = EV_DESISTE;
         ev -> tempo = w -> min_atual;
-        ev -> heroi = h;
-        ev -> base = b; 
-        ev -> missao = NULL;
-        ev -> invasao = NULL;
+        ev -> id1 = h -> id;
+        ev -> id2 = b -> id; 
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
         printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", w -> min_atual, h -> id, b -> id, cjto_card (b -> equipe), b -> max);
 
@@ -58,10 +54,8 @@ void evento_espera(struct mundo *w, struct heroi *h, struct base *b){
         return;
     ev -> tipo = EV_AVISA;
     ev -> tempo = w -> min_atual;
-    ev -> heroi = NULL;
-    ev -> base = b; 
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = b -> id; 
+    ev -> id2 = -1;
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n", w -> min_atual, h -> id, b -> id, fila_tamanho (b -> f_espera));
 
@@ -78,10 +72,8 @@ void evento_desiste(struct mundo *w, struct heroi *h, struct base *b) {
 
     ev -> tipo = EV_VIAJA;
     ev -> tempo = w -> min_atual;
-    ev -> heroi = h;
-    ev -> base = w -> bases[id_nova_base]; //identificamos a base que o h ira viajar pelo seu indice no vetor de bases
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = h -> id;
+    ev -> id2 = id_nova_base; 
 
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: DESISTE HEROI %2d BASE %d\n", w -> min_atual, h -> id, b -> id);
@@ -107,14 +99,10 @@ void evento_avisa(struct mundo *w, struct base *b) {
 
         ev -> tipo = EV_ENTRA;
         ev -> tempo = w -> min_atual;
-        ev -> heroi = primh;
-        ev -> base = b;
-        ev -> missao = NULL;
-        ev -> invasao = NULL;
+        ev -> id1 = primh -> id;
+        ev -> id2 = b -> id;
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
-
-    }
-    
+    }   
 }
 
 void evento_entra(struct mundo *w, struct heroi *h, struct base *b){
@@ -127,15 +115,11 @@ void evento_entra(struct mundo *w, struct heroi *h, struct base *b){
 
     ev -> tipo = EV_SAI;
     ev -> tempo = w -> min_atual + tpb;
-    ev -> heroi = h;
-    ev -> base = b;
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = h -> id;
+    ev -> id2 = b -> id;
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
 
     printf("%6d: ENTRA HEROI %2d BASE %d (%2d/%2d) SAI %6d\n", w -> min_atual, h -> id, b -> id, cjto_card (b -> equipe), b -> max, w -> min_atual + tpb);
-
-    
 }
 
 void evento_sai(struct mundo *w, struct heroi *h, struct base *b){
@@ -153,10 +137,8 @@ void evento_sai(struct mundo *w, struct heroi *h, struct base *b){
     
     ev1 -> tipo = EV_VIAJA;
     ev1 -> tempo = w -> min_atual;
-    ev1 -> heroi = h;
-    ev1 -> base = w -> bases[id_nova_base];
-    ev1 -> missao = NULL;
-    ev1 -> invasao = NULL;
+    ev1 -> id1 = h -> id;
+    ev1 -> id2 = id_nova_base;
 
     fprio_insere(w -> lef, ev1, ev1 -> tipo, ev1 -> tempo); //insere evento viaja
 
@@ -164,15 +146,10 @@ void evento_sai(struct mundo *w, struct heroi *h, struct base *b){
     
     ev2 -> tipo = EV_AVISA;
     ev2 -> tempo = w -> min_atual;
-    ev2 -> heroi = NULL;
-    ev2 -> base = b;
-    ev2 -> missao = NULL;
-    ev2 -> invasao = NULL;
+    ev2 -> id1 = b -> id;
+    ev2 -> id2 = -1;
 
     fprio_insere(w -> lef, ev2, ev2 -> tipo, ev2 -> tempo); //insere evento avisa
-
-    
-
 }
 
 void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
@@ -188,14 +165,11 @@ void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
 
     ev -> tipo = EV_CHEGA;
     ev -> tempo = w -> min_atual + duracao;
-    ev -> heroi = h;
-    ev -> base = b; 
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = h -> id;
+    ev -> id2 = b -> id; 
+
     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     printf("%6d: VIAJA HEROI %2d BASE %d BASE %d DIST %.2f VEL %d CHEGA %d\n", w -> min_atual, h -> id, base_atual -> id, b -> id, distancia, h -> velocidade, w -> min_atual + duracao);
-
-    
 }
 
 void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
@@ -203,19 +177,14 @@ void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
     cjto_retira (b -> equipe, h -> id);
     h -> morto = 1;
 
-    //na simulacao preciso colocar uma verificacao se o heroi morreu ou nao 
-
     struct evento *ev = malloc (sizeof(struct evento));
     
     ev -> tipo = EV_AVISA;
     ev -> tempo = w -> min_atual;
-    ev -> heroi = NULL;
-    ev -> base = b;
-    ev -> missao = NULL;
-    ev -> invasao = NULL;
+    ev -> id1 = b -> id;
+    ev -> id2 = -1;
 
-    fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
-    
+    fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);  
 }
 
 void evento_missao(struct mundo *w, struct missao *m){
@@ -293,10 +262,9 @@ void evento_missao(struct mundo *w, struct missao *m){
                     struct evento *ev = malloc (sizeof(struct evento));
                     ev -> tipo = EV_MORRE;
                     ev -> tempo = w -> min_atual;
-                    ev -> heroi = w -> herois[i];
-                    ev -> base = bmp;
-                    ev -> missao = NULL;
-                    ev -> invasao = NULL;
+                    ev -> id1 = i;
+                    ev -> id2 = bmp -> id;
+
                     fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
                     printf("%6d: MORRE HEROI %2d MISSAO %d\n", w -> min_atual,  w -> herois[i] -> id, m -> id);
                 }
@@ -310,14 +278,11 @@ void evento_missao(struct mundo *w, struct missao *m){
         struct evento *ev = malloc (sizeof(struct evento));
         ev -> tipo = EV_MISSAO;
         ev -> tempo = w -> min_atual + 24*60;
-        ev -> heroi = NULL;
-        ev -> base = NULL;
-        ev -> missao = m;
-        ev -> invasao = NULL;
+        ev -> id1 = m -> id;
+        ev -> id2 = -1;
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
         m -> tentativas++;
-    }
-    
+    } 
 }
 
 void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
@@ -332,10 +297,8 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
                     return; 
                 ev1 -> tipo = EV_RECUPERA_HEROI;
                 ev1 -> tempo = w -> min_atual + i -> t_penalidade_heroi;
-                ev1 -> heroi = w -> herois[j];
-                ev1 -> base = NULL;
-                ev1 -> missao = NULL;
-                ev1 -> invasao = NULL;
+                ev1 -> id1 = j;
+                ev1 -> id2 = -1;
                 fprio_insere(w -> lef, ev1, ev1 -> tipo, ev1 -> tempo);
 
                 struct evento *ev2 = malloc (sizeof(struct evento));
@@ -343,10 +306,8 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
                     return; 
                 ev2 -> tipo = EV_SAI;
                 ev2 -> tempo = w -> min_atual;
-                ev2 -> heroi = w -> herois[j];
-                ev2 -> base = b;
-                ev2 -> missao = NULL;
-                ev2 -> invasao = NULL;
+                ev2 -> id1 = j;
+                ev2 -> id2 = b -> id;
                 fprio_insere(w -> lef, ev2, ev2 -> tipo, ev2 -> tempo); 
 
             }
@@ -356,7 +317,7 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
         cjto_imprime(b -> equipe);
         printf("]\n");
         
-        W -> n_invasoes_realizadas++;
+        w -> n_invasoes_realizadas++;
         
         b -> estado = 0;
         struct evento *ev3 = malloc (sizeof(struct evento));
@@ -365,13 +326,10 @@ void evento_invade(struct mundo *w, struct invasao *i, struct base *b){
 
         ev3 -> tipo = EV_RECONSTROI_BASE;
         ev3 -> tempo = w -> min_atual + i -> t_penalidade_base;
-        ev3 -> heroi = NULL;
-        ev3 -> base = b;
-        ev3 -> missao = NULL;
-        ev3 -> invasao = NULL;
+        ev3 -> id1 = b -> id;
+        ev3 -> id2 = -1;
         fprio_insere(w -> lef, ev3, ev3 -> tipo, ev3 -> tempo);   
-    } 
-    
+    }
 }
 
 void evento_recupera_heroi(struct mundo *w, struct heroi *h){
@@ -385,8 +343,6 @@ void evento_reconstroi_base(struct mundo *w, struct base *b){
 }
 
 void evento_fim(struct mundo *w){
-
-    
 
     printf("%6d: FIM", w -> min_atual);
     int quant_mortos = 0;
@@ -411,11 +367,16 @@ void evento_fim(struct mundo *w){
     float porcentagem_m_cumpridas = w -> n_missoes_cumpridas / w -> n_missoes * 100;
     float porcentagem_i_feitas = w -> n_invasoes_realizadas / w -> n_invasoes * 100;
 
-    int min_tentativas_missoes = w -> missoes[1] -> tentativas;
+    int min_tentativas_missoes = w -> missoes[0] -> tentativas;
+    int max_tentativas_missoes = w -> missoes[0] -> tentativas;
     //vamos calcular o max e min de tentativas das missoes 
-    for (i = 0; i < w -> n_missoes_cumpridas){
-
+    for (i = 1; i < w -> n_missoes_cumpridas){
+        if (w -> missoes[i] -> tentativas < min_tentativas_missoes)
+            min_tentativas_missoes = w -> missoes[i] -> tentativas;
+        else if (w -> missoes[i] -> tentativas > max_tentativas_missoes)
+            max_tentativas_missoes = w -> missoes[i] -> tentativas;
     }
+
 
     printf("EVENTOS TRATADOS: %6d", w -> n_eventos_tratados);
     printf("MISSOES CUMPRIDAS: %6d/%6d (%.1f%)", w -> n_missoes_cumpridas, w -> n_missoes, porcentagem_m_cumpridas);
