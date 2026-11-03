@@ -172,10 +172,41 @@ void evento_viaja(struct mundo *w, struct heroi *h, struct base *b){
     printf("%6d: VIAJA HEROI %2d BASE %d BASE %d DIST %.2f VEL %d CHEGA %d\n", w -> min_atual, h -> id, base_atual -> id, b -> id, distancia, h -> velocidade, w -> min_atual + duracao);
 }
 
+
+void remove_eventos_hmorto(struct mundo *w, struct heroi *h){
+
+    struct fprio_t *lef_temp = fprio_cria ();
+
+    int tipo; //tipo do primeiro evento da lef
+    int tempo; //tempo do primeiro evento da lef
+    struct evento *prim_ev; 
+
+
+    while ((prim_ev = fprio_retira(w -> lef, &tipo, &tempo)) != NULL) {
+
+        struct evento *ev = prim_ev;
+        if (!ev)
+            return;
+        if ((ev -> id1 == h -> id) && (ev -> tipo == EV_ENTRA || ev -> tipo == EV_SAI || ev -> tipo == EV_VIAJA || ev -> tipo == EV_CHEGA))
+            free(ev);
+        else
+            fprio_insere(lef_temp, ev, ev -> tipo, ev -> tempo);
+    }
+
+    //apos removido todos os eventos, vamos devolver os elementos para a lef original
+
+    while ((prim_ev = fprio_retira(lef_temp, &tipo, &tempo)) != NULL) 
+        fprio_insere(w -> lef, prim_ev, prim_ev -> tipo, prim_ev -> tempo);
+
+    fprio_destroi(lef_temp);
+}
+
 void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
 
     cjto_retira (b -> equipe, h -> id);
     h -> morto = 1;
+
+    remove_eventos_hmorto(w, h); //remove todos os eventos futuros que tinham o h morto
 
     struct evento *ev = malloc (sizeof(struct evento));
     
@@ -361,7 +392,7 @@ void evento_fim(struct mundo *w){
     float mortalidade = quant_mortos / w -> n_herois * 100;
 
     for (int i = 0; i < w -> n_bases; i++){
-        printf("BASE %2d LOT %2d FILA MAX %2d MISSOES %d", w -> bases[i]-> id, w -> bases[i] -> max, w -> bases[i] -> f_max,  w -> bases[i] -> missoes);
+        printf("BASE %2d LOT %2d FILA MAX %2d MISSOES %d\n", w -> bases[i]-> id, w -> bases[i] -> max, w -> bases[i] -> f_max,  w -> bases[i] -> missoes);
     }
 
     float porcentagem_m_cumpridas = w -> n_missoes_cumpridas / w -> n_missoes * 100;
@@ -369,37 +400,22 @@ void evento_fim(struct mundo *w){
 
     int min_tentativas_missoes = w -> missoes[0] -> tentativas;
     int max_tentativas_missoes = w -> missoes[0] -> tentativas;
+    float soma_tentativas = 0.0;
     //vamos calcular o max e min de tentativas das missoes 
-    for (i = 1; i < w -> n_missoes_cumpridas){
+    for (int i = 1; i < w -> n_missoes; i++){
+        soma_tentativas += w -> missoes[i] -> tentativas;
         if (w -> missoes[i] -> tentativas < min_tentativas_missoes)
             min_tentativas_missoes = w -> missoes[i] -> tentativas;
         else if (w -> missoes[i] -> tentativas > max_tentativas_missoes)
             max_tentativas_missoes = w -> missoes[i] -> tentativas;
     }
 
+    float media_tentativa_missoes = soma_tentativas / w -> n_missoes;
 
-    printf("EVENTOS TRATADOS: %6d", w -> n_eventos_tratados);
-    printf("MISSOES CUMPRIDAS: %6d/%6d (%.1f%)", w -> n_missoes_cumpridas, w -> n_missoes, porcentagem_m_cumpridas);
-    printf("INVASOES REALIZADAS: %6d/%6d (%.1f%)", w -> n_invasoes_realizadas, w -> n_invasoes, porcentagem_i_feitas);
-    printf("TENTATIVAS POR MISSAO: MIN %d, MAX %d, MEDIA %.1f", min_tentativas_missoes, max_tentativas_missoes, media_tentativa_missoes)
-    printf("TAXA MORTALIDADE: %.1f", mortalidade);
+    printf("EVENTOS TRATADOS: %6d\n", w -> n_eventos_tratados);
+    printf("MISSOES CUMPRIDAS: %6d/%6d (%.1f%%)\n", w -> n_missoes_cumpridas, w -> n_missoes, porcentagem_m_cumpridas);
+    printf("INVASOES REALIZADAS: %6d/%6d (%.1f%%)\n", w -> n_invasoes_realizadas, w -> n_invasoes, porcentagem_i_feitas);
+    printf("TENTATIVAS POR MISSAO: MIN %d, MAX %d, MEDIA %.1f\n", min_tentativas_missoes, max_tentativas_missoes, media_tentativa_missoes);
+    printf("TAXA MORTALIDADE: %.1f%%", mortalidade);
 
 }
-
-
-
-/*O evento FIM encerra a simulação, gerando um relatório com informações sobre
-heróis, bases e missões:
-525600: FIM
-HEROI 0 VIVO PAC 32 VEL 3879 EXP 441 HABS [ 2 9 ]
-... (repete para todos os heróis)
-BASE 0 LOT 7 FILA MAX 3 MISSOES 434
-... (repete para todas as bases)
-EVENTOS TRATADOS: 285540
-MISSOES CUMPRIDAS: 4925/5256 (93.7%)
-INVASÕES REALIZADAS: 520/525 (99.0%)
-TENTATIVAS/MISSAO: MIN 1, MAX 313, MEDIA 26.0
-TAXA MORTALIDADE: 52.0%
-HEROI %2d VIVO PAC %3d VEL %4d EXP %4d HABS [ %d %d ... ]
-HEROI %2d MORTO PAC %3d VEL %4d EXP %4d HABS [ %d %d ... ]
-BASE %2d LOT %2d FILA MAX %2d MISSOES %d */

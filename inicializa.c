@@ -103,7 +103,7 @@ void eventos_iniciais(struct mundo *w){
         ev -> tipo = EV_INVADE;
         ev -> tempo = tempo;
         ev -> id1 = i;
-        ev -> id2 = -1;
+        ev -> id2 = w -> invasoes[i] -> id_base;
         
         fprio_insere(w -> lef, ev, ev -> tipo, ev -> tempo);
     }
@@ -123,7 +123,7 @@ void eventos_iniciais(struct mundo *w){
 }
 
 
-struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando todas as funcoes anteriores
+struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando as funcoes anteriores
     struct mundo *w = malloc (sizeof(struct mundo));
     if (!w)
         return NULL;   
@@ -187,4 +187,45 @@ struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando todas as funco
         inicializa_invasao(w -> invasoes[i], i);
     }
     return w;
+}
+
+struct mundo *destroi_mundo(struct mundo *w) { //destroi o mundo, encerrando o programa   
+
+    //liberando herois
+    for(int i = 0; i < w -> n_herois; i++){
+
+        cjto_destroi(w -> herois[i] -> habilidades);
+        free(w -> herois[i]);
+    }
+    free(w -> herois);
+
+    //liberando bases
+    for(int i = 0; i < w -> n_bases; i++){
+
+        cjto_destroi(w -> bases[i] -> equipe);
+        fila_destroi(w -> bases[i] -> f_espera);
+        free(w -> bases[i] -> local_base);
+        free(w -> bases[i]);
+    }
+    free(w -> bases);
+
+    //liberando missoes
+    for(int i = 0; i < w -> n_missoes; i++){
+
+        cjto_destroi(w -> missoes[i] -> hab_necessarias);
+        free(w -> missoes[i] -> local_missao);
+        free(w -> missoes[i]);
+    }
+    free(w -> missoes);
+
+    //liberando invasoes
+    for(int i = 0; i < w -> n_invasoes; i++){
+        free(w -> invasoes[i]);
+    }
+    free(w -> invasoes);
+
+    free(w -> tam_mundo);
+    fprio_destroi(w -> lef);
+    free(w);
+    return NULL;
 }

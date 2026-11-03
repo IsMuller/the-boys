@@ -8,11 +8,11 @@ MAIN    = theboys
 ENTREGA = $(MAIN)
 
 # lista de arquivos de cabeçalho (a completar)
-HDR = fila.h fprio.h conjunto.h entidades.h inicializa.h eventos.h funcoes_extras.h
+HDR = fila.h fprio.h conjunto.h entidades.h inicializa.h eventos.h funcoes_extras.h simulacao.h
 
 # lista de arquivos-objeto (a completar)
 # não inclua conjunto.o, senão ele será removido com "make clean"
-OBJ = fila.o fprio.o  inicializa.o eventos.o funcoes_extras.o theboys.o
+OBJ = fila.o fprio.o  inicializa.o eventos.o funcoes_extras.o simulacao.o theboys.o
 
 # construir o executável
 $(MAIN): $(OBJ) conjunto.o
@@ -27,6 +27,7 @@ fprio.o: fprio.c fprio.h
 inicializa.o: inicializa.c inicializa.h 
 eventos.o: eventos.c eventos.h 
 funcoes_extras.o: funcoes_extras.c funcoes_extras.h 
+simulacao.o : simulacao.c simulacao.h
 
 # executar
 run: $(MAIN)

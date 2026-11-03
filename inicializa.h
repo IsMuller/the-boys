@@ -12,16 +12,10 @@
 
 #include "entidades.h"
 
-void inicializa_heroi(struct heroi *h, int id);//inicializa um heroi a partir de seu id
-
-void inicializa_base(struct base *b, int id);//inicializa uma base a partir de seu id
-
-void inicializa_missao(struct missao *m, int id);//inicializa uma missao a partir de seu id
-
-void inicializa_invasao(struct invasao *i, int id);//inicializa uma invasao a partir de seu id
-
 void eventos_iniciais(struct mundo *w); //coloca na LEF os eventos iniciais para começar a simulaçao
 
 struct mundo *inicializa_mundo();//inicializa o mundo, utilizando todas as funcoes anteriores
+
+struct mundo *destroi_mundo(); //destroi o mundo, encerrando o programa
 
 #endif
