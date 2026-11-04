@@ -10,7 +10,7 @@
 void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
 
     int espera;
-
+    printf("%d\n", b -> f_espera -> num);
     h -> base = b -> id;
     if (cjto_card (b -> equipe) < b -> max && fila_tamanho(b -> f_espera) == 0)
         espera = 1;
@@ -45,7 +45,8 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
 
 void evento_espera(struct mundo *w, struct heroi *h, struct base *b){
 
-    fila_insere(b -> f_espera, h);
+    fila_insere(b -> f_espera, &h -> id);
+    printf("%d\n", b -> f_espera -> num);
     if (fila_tamanho(b -> f_espera) > b -> f_max) //vai atualizando a quantidade max de pessoas q ja ficaram na fila
         b -> f_max = fila_tamanho(b -> f_espera);
 
@@ -84,6 +85,7 @@ void evento_desiste(struct mundo *w, struct heroi *h, struct base *b) {
 void evento_avisa(struct mundo *w, struct base *b) {
 
     printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA [", w -> min_atual, b -> id, cjto_card (b -> equipe), b -> max);
+    printf("%d\n", b -> f_espera -> num);
     fila_imprime (b -> f_espera);
     printf("]\n");
     
@@ -219,7 +221,7 @@ void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
 }
 
 void evento_missao(struct mundo *w, struct missao *m){
-
+    //faz um vetor ordenado com as distancias relacionadas ao id da base e dps passa pelo vetor e checa da mais proxima ate a mais distante se é ativa e apta (break quando acha)
     struct base *bmp = NULL; //inicializando a base ativa e apta mais proxima
     int menor_dist = N_TAMANHO_MUNDO * N_TAMANHO_MUNDO; //começamos pegando a maior distancia possivel
     int i = 0;
@@ -375,7 +377,7 @@ void evento_reconstroi_base(struct mundo *w, struct base *b){
 
 void evento_fim(struct mundo *w){
 
-    printf("%6d: FIM", w -> min_atual);
+    printf("%6d: FIM\n", w -> min_atual);
     int quant_mortos = 0;
     //impressao dos herois
     for (int i = 0; i < w -> n_herois; i++){
@@ -395,8 +397,8 @@ void evento_fim(struct mundo *w){
         printf("BASE %2d LOT %2d FILA MAX %2d MISSOES %d\n", w -> bases[i]-> id, w -> bases[i] -> max, w -> bases[i] -> f_max,  w -> bases[i] -> missoes);
     }
 
-    float porcentagem_m_cumpridas = w -> n_missoes_cumpridas / w -> n_missoes * 100;
-    float porcentagem_i_feitas = w -> n_invasoes_realizadas / w -> n_invasoes * 100;
+    float porcentagem_m_cumpridas = (float)w -> n_missoes_cumpridas / w -> n_missoes * 100;
+    float porcentagem_i_feitas = (float)w -> n_invasoes_realizadas / w -> n_invasoes * 100;
 
     int min_tentativas_missoes = w -> missoes[0] -> tentativas;
     int max_tentativas_missoes = w -> missoes[0] -> tentativas;

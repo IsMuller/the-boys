@@ -107,7 +107,7 @@ void fila_imprime (struct fila_t *f){
   struct fila_nodo_t *aux = f -> prim;
   for (int i = 0; i < f -> num; i++){
 
-    printf("%p", aux->item); //ja que aux -> item sempre sera um ponteiro, precisamos imprimi-lo como tal
+    printf("%p", aux); //ja que aux -> item sempre sera um ponteiro, precisamos imprimi-lo como tal
 
     if (i < f -> num - 1)
       printf(" ");
