@@ -10,9 +10,6 @@
 int main() {
     //inicializando o mundo
     struct mundo *w = inicializa_mundo();
-    if (!w) {
-        return 1;
-    }
     // criando eventos iniciais e os inserindo na LEF
     eventos_iniciais(w);
     //simulando o mundo;

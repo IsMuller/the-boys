@@ -35,7 +35,7 @@ run: $(MAIN)
 
 # testar no Valgrind
 valgrind: $(MAIN)
-	valgrind --leak-check=full --track-origins=yes ./$(MAIN)
+	valgrind --leak-check=full --track-origins=yes -s ./$(MAIN)
 
 # gerar arquivo TGZ para entregar
 tgz: clean

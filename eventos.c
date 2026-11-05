@@ -45,7 +45,7 @@ void evento_chega (struct mundo *w, struct heroi *h, struct base *b){
 
 void evento_espera(struct mundo *w, struct heroi *h, struct base *b){
 
-    fila_insere(b -> f_espera, h);
+    fila_insere(b -> f_espera, &h -> id);
     if (fila_tamanho(b -> f_espera) > b -> f_max) //vai atualizando a quantidade max de pessoas q ja ficaram na fila
         b -> f_max = fila_tamanho(b -> f_espera);
 
@@ -220,13 +220,35 @@ void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
 
 void evento_missao(struct mundo *w, struct missao *m){
 
+    struct base **ordem_distancias =  malloc(w -> n_bases * sizeof(struct base *));
+    ordem_distancias[0] = malloc(sizeof(struct base));
+    ordem_distancias[0] = w -> bases[0];
+
     struct base *bmp = NULL; //inicializando a base ativa e apta mais proxima
-    int menor_dist = N_TAMANHO_MUNDO * N_TAMANHO_MUNDO; //começamos pegando a maior distancia possivel
-    int i = 0;
 
     printf("%6d: MISSAO %d TENT %d HAB REQ: [ ", w -> min_atual, m -> id, m -> tentativas);
     cjto_imprime(m -> hab_necessarias);
     printf("]\n");
+
+    for(int i = 1; i < w -> n_bases; i++){
+
+        ordem_distancias[i] = malloc(sizeof(struct base));
+        ordem_distancias[i] = w -> bases[i];
+        double dist = distancia_cartesiana(ordem_distancias[i] -> local_base, m -> local_missao);
+
+        for(int j = i; j > 0; j--) {
+
+            double menor_dist = distancia_cartesiana(ordem_distancias[j-1] -> local_base, m -> local_missao); 
+            if dist < menor_dist {
+                struct base *aux = ordem_distancias[j - 1];
+                ordem_distancias[j - 1] = ordem_distancias[j];
+                ordem_distancias[j] = aux;
+
+            }
+        }
+    }
+
+
 
     while(i < w -> n_bases){ //passando por todo o vetor de bases para encontrar a bmp
 

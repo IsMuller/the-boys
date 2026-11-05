@@ -124,9 +124,8 @@ void eventos_iniciais(struct mundo *w){
 
 
 struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando as funcoes anteriores
-    struct mundo *w = malloc (sizeof(struct mundo));
-    if (!w)
-        return NULL;   
+
+    struct mundo *w = calloc(1, sizeof(struct mundo)); //uso do calloc pois assim garanto que reservo 1 espaço do tamanho do mundo em que tudo esta zerado
 
     w -> min_atual = T_INICIO;
 

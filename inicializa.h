@@ -2,8 +2,8 @@
 #define INICIALIZA
 
 #define T_INICIO 0
-#define T_FIM_DO_MUNDO 525600 // 525600 = 60*24*365 = 365 dias
-#define N_TAMANHO_MUNDO 20000
+#define T_FIM_DO_MUNDO 60 * 24 * 30//525600 // 525600 = 60*24*365 = 365 dias
+#define N_TAMANHO_MUNDO 1000//20000
 #define N_HABILIDADES 10
 #define N_HEROIS (N_HABILIDADES * 5)
 #define N_BASES (N_HEROIS / 5)
