@@ -111,6 +111,11 @@ void evento_entra(struct mundo *w, struct heroi *h, struct base *b){
     if (!ev)
         return; 
 
+    //cjto_insere (b -> equipe, h -> id);
+    printf("\n123 --- ");
+    cjto_imprime(b -> equipe);
+    printf("\n---\n");
+
     int tpb = 15 + h -> paciencia * aleat(1, 20);
 
     ev -> tipo = EV_SAI;
@@ -220,9 +225,8 @@ void evento_morre(struct mundo *w, struct heroi *h, struct base *b){
 
 void evento_missao(struct mundo *w, struct missao *m){
 
-    struct base **ordem_distancias =  malloc(w -> n_bases * sizeof(struct base *));
-    ordem_distancias[0] = malloc(sizeof(struct base));
-    ordem_distancias[0] = w -> bases[0];
+    struct base **base_dist =  malloc(w -> n_bases * sizeof(struct base *));
+    base_dist[0] = w -> bases[0];
 
     struct base *bmp = NULL; //inicializando a base ativa e apta mais proxima
 
@@ -232,38 +236,33 @@ void evento_missao(struct mundo *w, struct missao *m){
 
     for(int i = 1; i < w -> n_bases; i++){
 
-        ordem_distancias[i] = malloc(sizeof(struct base));
-        ordem_distancias[i] = w -> bases[i];
-        double dist = distancia_cartesiana(ordem_distancias[i] -> local_base, m -> local_missao);
+        base_dist[i] = w -> bases[i];
+        double dist = distancia_cartesiana(base_dist[i] -> local_base, m -> local_missao);
+
+        printf("%6d: MISSAO %d BASE %d DIST %.0f HEROIS [ ", w -> min_atual, m -> id, base_dist[i] -> id, dist); //msg de depuracao
+        cjto_imprime(base_dist[i] -> equipe);
+        printf(" ]\n");
 
         for(int j = i; j > 0; j--) {
 
-            double menor_dist = distancia_cartesiana(ordem_distancias[j-1] -> local_base, m -> local_missao); 
-            if dist < menor_dist {
-                struct base *aux = ordem_distancias[j - 1];
-                ordem_distancias[j - 1] = ordem_distancias[j];
-                ordem_distancias[j] = aux;
+            double menor_dist = distancia_cartesiana(base_dist[j-1] -> local_base, m -> local_missao); 
+            if (dist < menor_dist){
+                struct base *aux = base_dist[j - 1];
+                base_dist[j - 1] = base_dist[j];
+                base_dist[j] = aux;
 
             }
+            else   
+                break;
         }
     }
 
-
-
-    while(i < w -> n_bases){ //passando por todo o vetor de bases para encontrar a bmp
-
-        struct base *b = w -> bases[i];
-
-        double dist = distancia_cartesiana(b -> local_base, m -> local_missao);
-
-        printf("%6d: MISSAO %d BASE %d DIST %.0f HEROIS [ ", w -> min_atual, m -> id, b -> id, dist); //msg de depuracao
-        cjto_imprime(b -> equipe);
-        printf(" ]\n");
+    for(int i = 0; i < w -> n_bases; i++){ //passando por todo o vetor de distancias para encontrar a bmp
 
         struct cjto_t *hab_base = cjto_cria (N_HABILIDADES); //num max de habilidades do mundo
 
         for (int j = 0; j < w -> n_herois; j++){ //vejo se índice do heroi j esta em b e adiciono sua habilidade em hab_base
-            if (cjto_pertence (b -> equipe, j)) {
+            if (cjto_pertence(base_dist[i] -> equipe, j)) {
 
                 printf("%6d: MISSAO %d HAB HEROI %2d: [ ", w -> min_atual, m -> id, j); //msg de depuracao
                 cjto_imprime(w -> herois[j] -> habilidades);
@@ -275,21 +274,18 @@ void evento_missao(struct mundo *w, struct missao *m){
             }
         }
 
-        printf("%6d: MISSAO %d UNIAO HAB BASE %d: [ ", w -> min_atual, m -> id, b -> id); //msg de depuracao
+        printf("%6d: MISSAO %d UNIAO HAB BASE %d: [ ", w -> min_atual, m -> id, base_dist[i] -> id); //msg de depuracao
         cjto_imprime(hab_base);
         printf(" ]\n");
 
-        if (b -> estado == 1 && cjto_contem (hab_base, m -> hab_necessarias)) { //candidata a bmp
-
-            if (bmp == NULL || dist < menor_dist){ //se for a primeira base candidata ou se a distancia for menor
-                menor_dist = dist;
-                bmp = b;
-            }
+        if (base_dist[i] -> estado == 1 && cjto_contem (hab_base, m -> hab_necessarias)) { //candidata a bmp
+            bmp = base_dist[i];
+            break;
         }
-
         cjto_destroi(hab_base);
-        i++;
     }
+   
+    free(base_dist);
 
     if (bmp) {
         w -> n_missoes_cumpridas ++;
@@ -438,6 +434,6 @@ void evento_fim(struct mundo *w){
     printf("MISSOES CUMPRIDAS: %6d/%6d (%.1f%%)\n", w -> n_missoes_cumpridas, w -> n_missoes, porcentagem_m_cumpridas);
     printf("INVASOES REALIZADAS: %6d/%6d (%.1f%%)\n", w -> n_invasoes_realizadas, w -> n_invasoes, porcentagem_i_feitas);
     printf("TENTATIVAS POR MISSAO: MIN %d, MAX %d, MEDIA %.1f\n", min_tentativas_missoes, max_tentativas_missoes, media_tentativa_missoes);
-    printf("TAXA MORTALIDADE: %.1f%%", mortalidade);
+    printf("TAXA MORTALIDADE: %.1f%%\n", mortalidade);
 
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "funcoes_extras.h"
 #include "entidades.h"
 #include "inicializa.h"
@@ -127,6 +128,8 @@ struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando as funcoes ant
 
     struct mundo *w = calloc(1, sizeof(struct mundo)); //uso do calloc pois assim garanto que reservo 1 espaço do tamanho do mundo em que tudo esta zerado
 
+    srand(0);//srand(time(NULL));
+
     w -> min_atual = T_INICIO;
 
     w -> tam_mundo = malloc(sizeof(struct localizacao)); //alocando tamanho do mundo
@@ -185,6 +188,9 @@ struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando as funcoes ant
             return NULL;
         inicializa_invasao(w -> invasoes[i], i);
     }
+    
+    // criando eventos iniciais e os inserindo na LEF
+    eventos_iniciais(w);
     return w;
 }
 
