@@ -78,8 +78,8 @@ int fprio_insere (struct fprio_t *f, void *item, int tipo, int prio){
       novo_nodo -> prox = aux -> prox;
     aux -> prox = novo_nodo;
   }
-
-  return f -> num++;
+  f -> num++;
+  return f -> num;
 }
 
 // Retira o primeiro item da fila e o devolve; o tipo e a prioridade

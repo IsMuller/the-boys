@@ -25,12 +25,12 @@ void inicializa_base(struct base *b, int id) {//inicializa uma base a partir de 
     b -> id = id;
     b -> estado = 1;
     b -> missoes = 0;
-    b ->local_base = malloc(sizeof(struct localizacao));
+    b -> local_base = malloc(sizeof(struct localizacao));
     b -> local_base -> x = aleat(0, N_TAMANHO_MUNDO - 1);
     b -> local_base -> y = aleat(0, N_TAMANHO_MUNDO - 1);
     b -> max = aleat(3, 10);
     b -> f_max = 0;
-    b -> equipe = cjto_cria(b -> max);
+    b -> equipe = cjto_cria(N_HEROIS); //recebe até o valor do id max de herois
     b -> f_espera = fila_cria();
 }
 
