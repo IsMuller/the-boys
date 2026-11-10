@@ -305,7 +305,7 @@ void evento_missao(struct mundo *w, struct missao *m){
 
         for (int i = 0; i < w -> n_herois; i++) {//vamos ver como ficaram os herois apos a missao
             if (w -> herois[i] -> estado == 1 && cjto_pertence (bmp -> equipe, w -> herois[i] -> id)){
-                double risco = m -> perigo / (w -> herois[i] -> paciencia + w -> herois[i] -> experiencia + 1.0);
+                int risco = m -> perigo / (w -> herois[i] -> paciencia + w -> herois[i] -> experiencia + 1);
                 if (risco > aleat(0, 30)) {
                     struct evento *ev = malloc (sizeof(struct evento));
                     ev -> tipo = EV_MORRE;

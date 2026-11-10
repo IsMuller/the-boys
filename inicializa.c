@@ -128,7 +128,7 @@ struct mundo *inicializa_mundo(){//inicializa o mundo, utilizando as funcoes ant
 
     struct mundo *w = calloc(1, sizeof(struct mundo)); //uso do calloc pois assim garanto que reservo 1 espaço do tamanho do mundo em que tudo esta zerado
 
-    srand(0);//srand(time(NULL));
+    srand(time(NULL));
 
     w -> min_atual = T_INICIO;
 
